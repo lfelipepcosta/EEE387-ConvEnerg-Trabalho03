@@ -34,7 +34,6 @@ Kpp = 85.1
 # --- 3. Simulação ---
 # Configurações da simulação
 dt = 0.0001
-# MUDANÇA: Tempo de simulação aumentado para permitir múltiplos ciclos longos
 T_sim = 180
 time = np.arange(0, T_sim, dt)
 
@@ -72,7 +71,6 @@ for i in range(len(time)):
             current_state = "BRAKING"
             descent_end_time = t
             descent_duration = descent_end_time - descent_start_time
-            # Mantém a regra original do enunciado
             hold_duration = 10 * descent_duration
             print(f"Tempo {t:.2f}s: Início da Frenagem em y={pos_y:.2f}m.")
             print(f"  -> Duração da descida: {descent_duration:.2f}s. Próxima parada terá: {hold_duration:.2f}s.")
@@ -144,8 +142,6 @@ fig, axs = plt.subplots(3, 1, figsize=(12, 10), sharex=True)
 fig.suptitle('Simulação da Manobra de Queda Livre e Frenagem', fontsize=16)
 
 axs[0].plot(time, y_out, label='Posição da Carga (y)')
-# MUDANÇA: Linha de referência removida do gráfico de posição
-# axs[0].plot(time, y_ref_out, '--', label='Referência (y_ref)')
 axs[0].axhline(y=Y, color='k', linestyle=':', label=f'Limite Superior (+Y = {Y}m)')
 axs[0].axhline(y=-Y, color='k', linestyle=':', label=f'Início da Frenagem (-Y = {-Y}m)')
 axs[0].set_ylabel('Posição (m)'), axs[0].legend(), axs[0].grid(True)

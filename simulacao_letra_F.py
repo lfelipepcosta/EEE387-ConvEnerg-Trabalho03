@@ -138,7 +138,6 @@ for i in range(len(time)):
 
 # --- 4. Exibir Resultados ---
 
-# MUDANÇA: Criação de um único gráfico de posição, sem marcações de ciclo
 fig, ax = plt.subplots(1, 1, figsize=(12, 5))
 fig.suptitle('Simulação da Manobra - Posição vs. Tempo', fontsize=16)
 
@@ -151,8 +150,7 @@ ax.set_xlabel('Tempo (s)')
 plt.tight_layout(rect=[0, 0.05, 1, 0.95])
 plt.show()
 
-# MUDANÇA: Saída final no terminal com as energias de forma intercalada
-print("--- Análise de Energia (Item f) ---")
+print("--- Análise de Energia (Item F) ---")
 num_pares = min(len(energias_descida), len(energias_subida))
 
 for i in range(num_pares):

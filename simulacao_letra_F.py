@@ -31,118 +31,137 @@ Kpv = 4.94
 Kiv = 0.15
 Kpp = 85.1
 
-# --- 3. Simulação para Medição de Energia ---
-# Configurações da simulação
+# --- 3. Simulação ---
 dt = 0.0001
-T_sim = 60
+T_sim = 180 # Tempo total da simulação
 time = np.arange(0, T_sim, dt)
 
-# Variáveis de estado do sistema
-ia = 0.0
-wm = 0.0
-pos_y = 0.0
-va = 0.0
+# Arrays para armazenar resultados do gráfico de posição
+y_out = np.zeros_like(time)
 
-# Variáveis de estado do controlador
-int_erro_i = 0.0
-int_erro_w = 0.0
+# Variáveis de estado
+ia, wm, pos_y, va = 0.0, 0.0, 0.0, 0.0
+int_erro_i, int_erro_w = 0.0, 0.0
 
-# Máquina de Estados
+# Máquina de Estados e variáveis de lógica
 current_state = "DESCENDING"
-descent_start_time = 0.0
-descent_end_time = 0.0
-stop_time_bottom = 0.0
-stop_time_top = 0.0
+descent_start_time, descent_end_time = 0.0, 0.0
+stop_time_bottom, stop_time_top = 0.0, 0.0
 hold_duration = 0.0
+pos_parada_inferior = 0.0
 
-# Variáveis para cálculo de energia
-energia_subida_J = 0.0
-energia_descida_J = 0.0
-
-print(f"Iniciando simulação para UM CICLO COMPLETO...")
+# MUDANÇA: Lógica para rastrear energia de eventos separados
+energias_descida = []
+energias_subida = []
+energia_evento_atual = 0.0
 
 # Loop da Simulação
 for i in range(len(time)):
     t = time[i]
 
-    # Lógica da Máquina de Estados
+    # --- Lógica da Máquina de Estados ---
     if current_state == "DESCENDING":
         y_ref = -Y
         ia_ref_pos = 0.0
         if pos_y <= -Y:
-            current_state = "BREAKING"
+            current_state = "BRAKING"
             descent_end_time = t
             descent_duration = descent_end_time - descent_start_time
             hold_duration = 10 * descent_duration
-            print(f"Tempo {t:.2f}s: Estado -> BREAKING.")
+            energia_evento_atual = 0.0
 
-    elif current_state == "BREAKING":
+    elif current_state == "BRAKING":
         y_ref = -Y
         ia_ref_pos = Ia_max
         if wm >= -0.01:
+            energias_descida.append(energia_evento_atual)
+            pos_parada_inferior = pos_y
             current_state = "HOLDING_BOTTOM"
             stop_time_bottom = t
-            print(f"Tempo {t:.2f}s: Estado -> HOLDING_BOTTOM.")
 
     elif current_state == "HOLDING_BOTTOM":
-        y_ref = -Y
+        y_ref = pos_parada_inferior
         if t - stop_time_bottom > hold_duration:
             current_state = "ASCENDING"
-            print(f"Tempo {t:.2f}s: Estado -> ASCENDING.")
+            energia_evento_atual = 0.0
 
     elif current_state == "ASCENDING":
         y_ref = +Y
         if pos_y >= Y:
+            energias_subida.append(energia_evento_atual)
             current_state = "HOLDING_TOP"
             stop_time_top = t
-            print(f"Tempo {t:.2f}s: Estado -> HOLDING_TOP.")
 
     elif current_state == "HOLDING_TOP":
         y_ref = +Y
         if t - stop_time_top > hold_duration:
-            print(f"Tempo {t:.2f}s: Fim do primeiro ciclo completo. Interrompendo a simulação.")
-            break
+            current_state = "DESCENDING"
+            descent_start_time = t
 
-    # Lógica de Controle em Cascata
-    if current_state not in ["DESCENDING", "BREAKING"]:
+    # --- Lógica de Controle em Cascata ---
+    if current_state not in ["DESCENDING", "BRAKING"]:
         erro_pos = y_ref - pos_y
         wm_ref = Kpp * erro_pos
         erro_w = wm_ref - wm
         int_erro_w += erro_w * dt
         ia_ref_ff = T_carga_static / k2
         ia_ref_pos = Kpv * erro_w + Kiv * int_erro_w + ia_ref_ff
-
+    
     ia_ref_sat = np.clip(ia_ref_pos, -Ia_max, Ia_max)
     erro_i = ia_ref_sat - ia
-
+    
     if abs(va) >= Va_max and (np.sign(erro_i) * np.sign(va) > 0):
         pass
     else:
         int_erro_i += erro_i * dt
-
+        
     va_control = Kpc * erro_i + Kic * int_erro_i
     ea = k1 * wm
     va = va_control + ea
     va = np.clip(va, -Va_max, Va_max)
-
-    # Modelo da Planta (Motor + Carga)
+    
+    # --- Modelo da Planta (Motor + Carga) ---
     dia_dt = (va - Ra * ia - ea) / La
     ia += dia_dt * dt
     Te = k2 * ia
     dwm_dt = (Te - T_carga_static - ka * wm) / J_total
     wm += dwm_dt * dt
     pos_y += (wm * r) * dt
-
-    # MUDANÇA: Cálculo da Energia Instantânea
+    
+    # Armazena resultado de posição para o gráfico
+    y_out[i] = pos_y
+    
+    # Cálculo de Energia para o evento atual
     potencia_instantanea = va * ia
-    if current_state == "ASCENDING":
-        energia_subida_J += potencia_instantanea * dt
-    if current_state == "BREAKING":
-        energia_descida_J += potencia_instantanea * dt
+    if current_state == "ASCENDING" or current_state == "BRAKING":
+        energia_evento_atual += potencia_instantanea * dt
 
+# --- 4. Exibir Resultados ---
 
-# --- 4. Exibir Resultados de Energia ---
-print("\n--- Análise de Energia (Item F) para UM CICLO ---")
-print(f"Energia Gasta na Subida (Motor): {energia_subida_J:.2f} Joules")
-print(f"Energia na Descida (Gerador/Frenagem): {energia_descida_J:.2f} Joules")
-print(f"Balanço Energético do Ciclo (Gasto Líquido): {energia_subida_J + energia_descida_J:.2f} Joules")
+# MUDANÇA: Criação de um único gráfico de posição, sem marcações de ciclo
+fig, ax = plt.subplots(1, 1, figsize=(12, 5))
+fig.suptitle('Simulação da Manobra - Posição vs. Tempo', fontsize=16)
+
+ax.plot(time, y_out, label='Posição da Carga (y)')
+ax.axhline(y=Y, color='k', linestyle=':', label=f'Limite Superior (+Y = {Y}m)')
+ax.axhline(y=-Y, color='k', linestyle=':', label=f'Início da Frenagem (-Y = {-Y}m)')
+ax.set_ylabel('Posição (m)'), ax.legend(), ax.grid(True)
+ax.set_xlabel('Tempo (s)')
+
+plt.tight_layout(rect=[0, 0.05, 1, 0.95])
+plt.show()
+
+# MUDANÇA: Saída final no terminal com as energias de forma intercalada
+print("--- Análise de Energia (Item f) ---")
+num_pares = min(len(energias_descida), len(energias_subida))
+
+for i in range(num_pares):
+    print(f"\n--- Descida {i+1} ---")
+    print(f"  Energia Recuperada (Gerador): {energias_descida[i]:.2f} Joules")
+    print(f"--- Subida {i+1} ---")
+    print(f"  Energia Gasta (Motor): {energias_subida[i]:.2f} Joules")
+
+# Imprime qualquer descida extra que não teve uma subida correspondente
+if len(energias_descida) > num_pares:
+    print(f"\n--- Descida {len(energias_descida)} ---")
+    print(f"  Energia Recuperada (Gerador): {energias_descida[-1]:.2f} Joules")

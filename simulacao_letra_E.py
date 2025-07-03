@@ -162,7 +162,7 @@ for i in range(len(time)):
 
 # --- 4. Plotar Resultados ---
 fig, axs = plt.subplots(3, 1, figsize=(12, 10), sharex=True)
-fig.suptitle('Simulação da Manobra de Frenagem e Onda Quadrada (Item e)', fontsize=16)
+fig.suptitle('Simulação da Manobra de Frenagem e Onda Quadrada=', fontsize=16)
 
 # Posição
 axs[0].plot(time, y_out, label='Posição da Carga (y)')

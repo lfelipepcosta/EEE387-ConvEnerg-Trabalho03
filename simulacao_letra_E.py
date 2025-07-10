@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 plt.rcParams.update({
     'font.size': 12,          # Tamanho da fonte padrão para itens não especificados
     'axes.titlesize': 18,     # Tamanho do título dos eixos (ax.set_title)
-    'axes.labelsize': 14,     # Tamanho dos rótulos dos eixos (xlabel, ylabel)
-    'xtick.labelsize': 12,    # Tamanho dos números no eixo X
-    'ytick.labelsize': 12,    # Tamanho dos números no eixo Y
-    'legend.fontsize': 12,    # Tamanho da fonte da legenda
+    'axes.labelsize': 18,     # Tamanho dos rótulos dos eixos (xlabel, ylabel)
+    'xtick.labelsize': 16,    # Tamanho dos números no eixo X
+    'ytick.labelsize': 16,    # Tamanho dos números no eixo Y
+    'legend.fontsize': 14,    # Tamanho da fonte da legenda
     'figure.titlesize': 24    # Tamanho do título principal da figura (fig.suptitle)
 })
 

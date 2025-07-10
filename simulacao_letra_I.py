@@ -2,15 +2,14 @@ import numpy as np
 from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 
-# --- Configuração dos Gráficos ---
 plt.rcParams.update({
-    'font.size': 12,
-    'axes.titlesize': 18,
-    'axes.labelsize': 14,
-    'xtick.labelsize': 12,
-    'ytick.labelsize': 12,
-    'legend.fontsize': 12,
-    'figure.titlesize': 24
+    'font.size': 12,          # Tamanho da fonte padrão para itens não especificados
+    'axes.titlesize': 18,     # Tamanho do título dos eixos (ax.set_title)
+    'axes.labelsize': 18,     # Tamanho dos rótulos dos eixos (xlabel, ylabel)
+    'xtick.labelsize': 16,    # Tamanho dos números no eixo X
+    'ytick.labelsize': 16,    # Tamanho dos números no eixo Y
+    'legend.fontsize': 14,    # Tamanho da fonte da legenda
+    'figure.titlesize': 24    # Tamanho do título principal da figura (fig.suptitle)
 })
 
 # --- 1. Parâmetros do Sistema e Controladores ---

@@ -2,7 +2,7 @@ import numpy as np
 from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 
-# --- Configuração dos Gráficos (do seu código original) ---
+# --- Configuração dos Gráficos ---
 plt.rcParams.update({
     'font.size': 12,
     'axes.titlesize': 18,
@@ -13,7 +13,7 @@ plt.rcParams.update({
     'figure.titlesize': 24
 })
 
-# --- 1. Parâmetros do Sistema e Controladores (do seu código original) ---
+# --- 1. Parâmetros do Sistema e Controladores ---
 R_a = 0.2
 L_a = 0.004
 k = 0.265
@@ -37,7 +37,7 @@ Kic = 50.0
 
 I_ff = T_load_static / k
 
-# --- 2. Função de Dinâmica do Sistema (do seu código original) ---
+# --- 2. Função de Dinâmica do Sistema ---
 def system_dynamics(t, state, omega_y, T_hold):
     y, omega_m, i_a, integ_v, integ_c = state
     if t < T_hold:
@@ -72,7 +72,7 @@ def system_dynamics(t, state, omega_y, T_hold):
     return [dy_dt, d_omega_dt, di_a_dt, d_integ_v_dt, d_integ_c_dt]
 
 # --- 3. Execução da Simulação para o Caso de Teste ---
-# Frequência para o caso de erro médio (~40%), como na sua Figura 2.
+# Frequência para o caso de erro médio (~40%)
 omega_y_teste = 0.77
 T_hold_duration = 1.0
 

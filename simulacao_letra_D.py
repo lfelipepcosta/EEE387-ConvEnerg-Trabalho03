@@ -2,6 +2,16 @@ import numpy as np
 from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 
+plt.rcParams.update({
+    'font.size': 12,          # Tamanho da fonte padrão para itens não especificados
+    'axes.titlesize': 18,     # Tamanho do título dos eixos (ax.set_title)
+    'axes.labelsize': 14,     # Tamanho dos rótulos dos eixos (xlabel, ylabel)
+    'xtick.labelsize': 12,    # Tamanho dos números no eixo X
+    'ytick.labelsize': 12,    # Tamanho dos números no eixo Y
+    'legend.fontsize': 12,    # Tamanho da fonte da legenda
+    'figure.titlesize': 24    # Tamanho do título principal da figura (fig.suptitle)
+})
+
 # --- 1. Parâmetros do Sistema e Controladores ---
 R_a = 0.2
 L_a = 0.004
@@ -79,9 +89,9 @@ def plot_results(sol, omega_y, error_percent, T_hold=1.0, save_filename=None, is
     y_ref = np.where(sol.t >= T_hold, Y * np.sin(omega_y * (sol.t - T_hold)), 0.0)
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 9), sharex=True)
 
-    title_text = f'Item D: Resposta para $\omega_y$ = {omega_y:.2f} rad/s (Erro = {error_percent:.2f}%)'
+    title_text = f'Resposta para $\omega_y$ = {omega_y:.2f} rad/s (Erro = {error_percent:.2f}%)'
     if is_limit_case:
-        title_text = f'Item D: Resposta na Frequência Limite Teórica ($\omega_y$ = {omega_y:.2f} rad/s, Erro = {error_percent:.2f}%)'
+        title_text = f'Resposta na Frequência Limite Teórica ($\omega_y$ = {omega_y:.2f} rad/s, Erro = {error_percent:.2f}%)'
 
     ax1.plot(sol.t, y_ref, 'k--', label='Referência (y_ref)')
     ax1.plot(sol.t, y_sim, 'r-', label='Resposta do Sistema (y)')

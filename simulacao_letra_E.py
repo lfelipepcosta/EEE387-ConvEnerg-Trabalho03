@@ -1,6 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+plt.rcParams.update({
+    'font.size': 12,          # Tamanho da fonte padrão para itens não especificados
+    'axes.titlesize': 18,     # Tamanho do título dos eixos (ax.set_title)
+    'axes.labelsize': 14,     # Tamanho dos rótulos dos eixos (xlabel, ylabel)
+    'xtick.labelsize': 12,    # Tamanho dos números no eixo X
+    'ytick.labelsize': 12,    # Tamanho dos números no eixo Y
+    'legend.fontsize': 12,    # Tamanho da fonte da legenda
+    'figure.titlesize': 24    # Tamanho do título principal da figura (fig.suptitle)
+})
+
 # --- 1. Parâmetros do Sistema ---
 # Parâmetros da Máquina
 Ra = 0.2         # Resistência de armadura [Ohm]
@@ -139,7 +149,7 @@ for i in range(len(time)):
 
 # --- 4. Plotar Resultados ---
 fig, axs = plt.subplots(3, 1, figsize=(12, 10), sharex=True)
-fig.suptitle('Simulação da Manobra de Queda Livre e Frenagem', fontsize=16)
+fig.suptitle('Simulação da Manobra de Queda Livre e Frenagem')
 
 axs[0].plot(time, y_out, label='Posição da Carga (y)')
 axs[0].axhline(y=Y, color='k', linestyle=':', label=f'Limite Superior (+Y = {Y}m)')
